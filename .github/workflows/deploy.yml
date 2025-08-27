@@ -57,6 +57,21 @@ jobs:
       - name: Build static export with Next.js
         run: npm run build:static
 
+      - name: Prepare Pages artifact (ensure out exists)
+        run: |
+          if [ ! -d "out" ] && [ -d ".next/export" ]; then
+            echo "Creating out/ from .next/export ..."
+            cp -R .next/export out
+          fi
+          if [ -d "out" ]; then
+            echo "out/ is ready."
+          else
+            echo "out/ still missing. Listing .next for debugging:"
+            ls -la .next || true
+            echo "If you see no .next/export, Next.js may have changed layout."
+            exit 1
+          fi
+
       - name: List build output
         run: |
           echo "Checking build output directory:"
