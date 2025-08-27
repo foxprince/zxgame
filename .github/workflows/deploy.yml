@@ -55,9 +55,7 @@ jobs:
         run: npm ci
 
       - name: Build static export with Next.js
-        run: |
-          export GITHUB_ACTIONS=true
-          npm run build:static
+        run: npm run build:static
 
       - name: Prepare Pages artifact (ensure out exists)
         run: |
@@ -75,15 +73,27 @@ jobs:
 
             echo "Attempting to synthesize out/ from .next/server/app + .next/static + public ..."
             mkdir -p out
-            if [ -d ".next/server/app" ]; then
-              # Copy HTML files preserving relative structure
-              (cd .next/server/app && find . -type f -name '*.html' -print0 | xargs -0 -I{} sh -c 'mkdir -p "../../out/$(dirname {})" && cp "{}" "../../out/{}"') || true
+            
+            # Copy main page HTML as index.html
+            if [ -f ".next/server/app/index.html" ]; then
+              cp .next/server/app/index.html out/index.html
+              echo "Copied index.html from .next/server/app/"
+            elif [ -f ".next/server/app/page.html" ]; then
+              cp .next/server/app/page.html out/index.html
+              echo "Copied page.html as index.html from .next/server/app/"
             fi
+            
+            # Copy other HTML files preserving structure
+            if [ -d ".next/server/app" ]; then
+              (cd .next/server/app && find . -type f -name '*.html' -not -name 'index.html' -not -name 'page.html' -print0 | xargs -0 -I{} sh -c 'mkdir -p "../../out/$(dirname {})" && cp "{}" "../../out/{}"') || true
+            fi
+            
             # Copy static assets
             if [ -d ".next/static" ]; then
               mkdir -p out/_next
               cp -R .next/static out/_next/static || true
             fi
+            
             # Copy public assets
             if [ -d "public" ]; then
               cp -R public/* out/ 2>/dev/null || true
@@ -91,6 +101,8 @@ jobs:
 
             echo "Synthesis done. Verifying out/:"
             ls -la out || true
+            echo "Checking for index.html:"
+            ls -la out/index.html || echo "No index.html found"
           fi
 
       - name: List build output
