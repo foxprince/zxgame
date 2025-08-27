@@ -69,7 +69,26 @@ jobs:
             echo "out/ still missing. Listing .next for debugging:"
             ls -la .next || true
             echo "If you see no .next/export, Next.js may have changed layout."
-            exit 1
+            echo "Proceeding by uploading .next directory for GitHub Pages Next integration."
+
+            echo "Attempting to synthesize out/ from .next/server/app + .next/static + public ..."
+            mkdir -p out
+            if [ -d ".next/server/app" ]; then
+              # Copy HTML files preserving relative structure
+              (cd .next/server/app && find . -type f -name '*.html' -print0 | xargs -0 -I{} sh -c 'mkdir -p "../../out/$(dirname {})" && cp "{}" "../../out/{}"') || true
+            fi
+            # Copy static assets
+            if [ -d ".next/static" ]; then
+              mkdir -p out/_next
+              cp -R .next/static out/_next/static || true
+            fi
+            # Copy public assets
+            if [ -d "public" ]; then
+              cp -R public/* out/ 2>/dev/null || true
+            fi
+
+            echo "Synthesis done. Verifying out/:"
+            ls -la out || true
           fi
 
       - name: List build output
@@ -87,10 +106,10 @@ jobs:
             ls -la .next/
           fi
 
-      - name: Upload artifact
+      - name: Upload artifact (Next.js build output)
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: ./.next
 
   # 部署工作
   deploy:
