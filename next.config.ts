@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const isProd = process.env.NODE_ENV === 'production';
+const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
 
 const nextConfig: NextConfig = {
   output: 'export',
@@ -8,9 +8,9 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // 在 GitHub Pages（生产环境）下使用仓库名作为基路径
-  basePath: isProd ? '/zxgame' : undefined,
-  assetPrefix: isProd ? '/zxgame/' : undefined,
+  // 在 GitHub Pages 部署时使用仓库名作为基路径
+  basePath: isGitHubPages ? '/zxgame' : '',
+  assetPrefix: isGitHubPages ? '/zxgame/' : '',
   typescript: {
     ignoreBuildErrors: true,
   },

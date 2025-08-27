@@ -55,7 +55,9 @@ jobs:
         run: npm ci
 
       - name: Build static export with Next.js
-        run: npm run build:static
+        run: |
+          export GITHUB_ACTIONS=true
+          npm run build:static
 
       - name: Prepare Pages artifact (ensure out exists)
         run: |
@@ -109,7 +111,7 @@ jobs:
       - name: Upload artifact (Next.js build output)
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./.next
+          path: ./out
 
   # 部署工作
   deploy:
