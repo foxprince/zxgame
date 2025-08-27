@@ -11,15 +11,11 @@ const nextConfig: NextConfig = {
   output: 'export',
   trailingSlash: true,
   // GitHub Pages 部署时的基础路径（如果仓库名不是用户名.github.io）
-  // 如果你的仓库名是 zxgame，取消注释下面这行
-  basePath: '/zxgame',
-  assetPrefix: '/zxgame',
+  // 如果你的仓库名是 zxgame，取消注释下面两行
+  // basePath: '/zxgame',
+  // assetPrefix: '/zxgame',
   images: {
     unoptimized: true,
-  },
-  // 静态导出配置
-  experimental: {
-    outputFileTracingRoot: process.cwd(),
   },
   webpack: (config, { dev }) => {
     if (dev) {

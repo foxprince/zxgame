@@ -14,14 +14,14 @@
 
 ### 2. 配置仓库分支
 
-确保你的代码在 `main` 分支上，因为 GitHub Actions 工作流配置为在推送到 `main` 分支时触发。
+确保你的代码在 `master` 分支上，因为 GitHub Actions 工作流配置为在推送到 `master` 分支时触发。
 
 ### 3. 推送代码触发部署
 
 ```bash
 git add .
 git commit -m "Setup GitHub Pages deployment"
-git push origin main
+git push origin master
 ```
 
 推送后，GitHub Actions 将自动构建和部署你的站点。
@@ -85,6 +85,23 @@ npm run build:static
 1. 进入仓库的 **Actions** 标签
 2. 点击失败的工作流
 3. 查看详细错误信息
+
+### 4. 本地环境问题
+如果本地构建失败（如磁盘空间不足）：
+
+```bash
+# 清理 npm 缓存
+npm cache clean --force
+
+# 删除 node_modules 并重新安装
+rm -rf node_modules package-lock.json
+npm install
+
+# 或者使用 npx 直接构建（不需要本地安装）
+npx next build
+```
+
+**注意**：即使本地构建失败，GitHub Actions 云环境中的部署仍然可以正常工作。
 
 ## 手动触发部署
 
