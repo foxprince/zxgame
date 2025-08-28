@@ -15,7 +15,7 @@
 
 # next.js
 /.next/
-/out/
+# /out/  # 允许提交静态构建文件用于 GitHub Pages 部署
 
 # production
 /build
